@@ -32,6 +32,7 @@ static Token gettok() {
         return Token::eof;
     }
 
+    // wordssssss
     if (std::isalpha(static_cast<unsigned char>(LastChar))) {
         IdentifierStr = static_cast<char>(LastChar);
 
@@ -51,7 +52,38 @@ static Token gettok() {
         return Token::identifier;
     }
     
-    // Add numerical parsing!
+  // Number
+  if (std::isdigit(static_cast<unsigned char>(LastChar)) || LastChar == '.') {
+    std::string NumStr;
+    do {
+      NumStr += static_cast<char>(LastChar);
+      LastChar = std::getchar();
+      if (LastChar == EOF) break;
+    } while (std::isdigit(static_cast<unsigned char>(LastChar)) || LastChar == '.');
+
+    NumVal = std::strtod(NumStr.c_str(), nullptr);
+    return Token::number;
+  }
+
+  // Let our language handle comments
+  if (LastChar == '#') {
+    do {
+      LastChar = std::getchar();
+    } while (LastChar != EOF && LastChar != '\n' && LastChar != '\r');
+
+    if (LastChar != EOF)
+      return gettok();
+  }
+
+  // Pares the EOF token
+  if (LastChar == EOF) {
+    return Token::eof;
+  }
+
+  // fallback, gives us ascii and because everything else is negative we know this is a fail?
+  int ThisChar = LastChar;
+  LastChar = std::getchar();
+  return static_cast<Token>(ThisChar);
 
 }
 
